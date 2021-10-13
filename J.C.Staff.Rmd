@@ -1,0 +1,225 @@
+---
+title: "Analysis score J.C.Staff"
+author: "Thammarat Kowitkanit"
+date: "10/7/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+This paper will analyze J.C.Staff studio dataframe about relationship between score, genres, type of aired, episode and source variables.
+
+- explore data
+- descriptive analysis
+
+
+## Explore data
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+library(tidyverse)
+jc <- read.csv("J.C.Staff dataset.csv", stringsAsFactors =FALSE)
+
+knitr::kable(head(jc , 10), format = "latex")
+
+jc$Score <- replace(jc$Score,jc$Score == "Unknown", NA)
+jc$Score <- as.numeric(as.character(jc$Score))
+```
+
+
+> Table 1 : show headers of anime made by J.C.Staff
+
+## Descriptive analysis
+
+### 1.Score and Genres
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  
+ 
+  jc_action <- jc %>% select("Genres" , "Score") %>%
+                  filter(grepl("Action", Genres))
+  jc_comedy <- jc %>% select("Genres" , "Score") %>%
+                  filter(grepl("Comedy", Genres))
+  jc_drama <- jc %>% select("Genres" , "Score") %>%
+                  filter(grepl("Drama", Genres))
+  jc_fantasy <- jc %>% select("Genres" , "Score") %>%
+                  filter(grepl("Fantasy", Genres))
+  ##transform column chracter score to numeric score
+  
+  
+  ##plot graph
+  
+  jc_action %>% ggplot(aes(Score)) + 
+                geom_histogram(bins = 4) +
+                theme_minimal()
+  
+```
+
+> Fig 1 : Histogram of score that represent action anime 
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+
+   jc_fantasy %>% ggplot(aes(Score)) + geom_histogram(bins = 10)+
+                   theme_minimal()
+```
+
+> Fig 2 : Histogram of score that represent fantasy anime 
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+
+   jc_comedy %>% ggplot(aes(Score)) + geom_histogram(bins = 10)+
+                  theme_minimal()
+
+```
+
+> Fig 3 : Histogram of score that represent comedy anime 
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+
+   jc_drama %>% ggplot(aes(Score)) + geom_histogram(bins =10)+
+                theme_minimal()
+
+```
+
+> Fig 4 : Histogram of score that represent drama anime 
+
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+##create dataframe that contain mean score
+Genres <- c("action" , "fantasy" , "comedy" , "drama")
+Mean <- c( round( mean(jc_action$Score, na.rm = TRUE), digits = 2 ), 
+          round(mean(jc_fantasy$Score, na.rm = TRUE), digits = 2 ),                      round(mean(jc_comedy$Score, na.rm = TRUE), digits = 2 ), 
+          round(mean(jc_drama$Score, na.rm = TRUE), digits = 2 ) )
+
+table_generes <- data.frame(Genres, Mean)
+knitr::kable(table_generes )
+
+```
+
+> table 2 : mean of score each generes anime
+
+From histogram and mean table we can summary that J.C.Staff can better make comedy and drama anime than action and fantasy anime. 
+
+### 2.Score and Type of aired
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_TV <- jc %>% filter(grepl("TV", Type))
+  
+  jc_TV %>% ggplot(aes(Score)) + geom_histogram(bins = 4) + theme_minimal()
+
+```
+
+> Fig 5 : histogram of score that represent TV anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_Movie <- jc %>% filter(grepl("Movie", Type))
+  
+  jc_Movie %>% ggplot(aes(Score)) + geom_histogram(bins = 5) + theme_minimal()
+
+```
+
+> Fig 6 : histogram of score that represent Movie anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  Aired <- c("TV" , "Movie")
+  Aired_Mean <- c(round(mean(jc_TV $Score, na.rm = TRUE), digits = 2), 
+                  round(mean(jc_Movie$Score, na.rm = TRUE), digits = 2) )
+
+  table_generes <- data.frame(Aired, Mean = Aired_Mean)
+  knitr::kable(table_generes )
+
+```
+
+> table 3 : mean of score each type of aired anime
+
+From histogram and mean table we can summary that TV anime has better score than Movie anime. 
+
+### 3.Score and amount of episode
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_oneseason <- jc %>% filter(Episodes == 12 | Episodes == 13)
+  
+  
+  
+  jc_oneseason %>% ggplot(aes(Score)) + geom_histogram(bins = 4) +                                theme_minimal()
+
+```
+
+> Fig 7 : histogram of score that represent one season anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_twoseason <- jc %>% filter(Episodes == 24 | Episodes == 25 | 
+                                  Episodes == 26)
+  jc_twoseason %>% ggplot(aes(Score)) + geom_histogram(bins = 5) +                                theme_minimal()
+
+```
+
+> Fig 8 : histogram of score that represent two season anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  Season <- c("One season anime" , "two season anime")
+  Season_Mean <- c(round(mean(jc_oneseason$Score, na.rm = TRUE), digits = 2), 
+                  round(mean(jc_twoseason$Score, na.rm = TRUE), digits = 2) )
+
+  table_generes <- data.frame(Season, Mean = Season_Mean)
+  knitr::kable(table_generes )
+
+```
+
+> table 4 : mean of score each season anime
+
+From histogram and mean table we can summary that J.C.Staff can better make one season anime than two season anime.
+
+### 4.Score and Source
+
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_Manga <- jc %>% filter(grepl("Manga", Source))
+  
+  
+  jc_Manga %>% ggplot(aes(Score)) + geom_histogram(bins = 5) + theme_minimal()
+
+```
+
+> Fig 9 : histogram of score that represent manga anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_novel <- jc %>% filter(grepl("Light novel", Source))
+  jc_novel %>% ggplot(aes(Score)) + geom_histogram(bins = 5) + theme_minimal()
+
+```
+
+> Fig 10 : histogram of score that represent Light novel anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_original <- jc %>% filter(grepl("Original", Source))
+
+  jc_original %>% ggplot(aes(Score)) + geom_histogram(bins = 7) + theme_minimal()
+
+```
+
+> Fig 11 : histogram of score that represent Original anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+  jc_game <- jc %>% filter(grepl("Game", Source))
+  jc_game %>% ggplot(aes(Score)) + geom_histogram(bins = 5) + theme_minimal()
+
+```
+
+> Fig 12 : histogram of score that represent game anime
+
+```{r echo=FALSE ,warning=FALSE,message=FALSE}
+##create dataframe that contain mean score
+Source <- c("Manga" , "Light novel" , "Original" , "Game")
+Source_Mean <- c( round( mean(jc_Manga$Score, na.rm = TRUE), digits = 2 ), 
+          round(mean(jc_novel$Score, na.rm = TRUE), digits = 2 ),                      round(mean(jc_original$Score, na.rm = TRUE), digits = 2 ), 
+          round(mean(jc_game$Score, na.rm = TRUE), digits = 2 ) )
+
+table_generes <- data.frame(Source, Mean = Source_Mean)
+knitr::kable(table_generes )
+
+```
+
+
+> table 5 : mean of score each source anime
+
+From histogram and mean table we can summary that J.C.Staff can better make light novel anime, manga anime, Original anime and game anime sequentially.

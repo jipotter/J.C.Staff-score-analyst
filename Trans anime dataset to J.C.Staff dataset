@@ -1,0 +1,9 @@
+library(tidyverse)
+anime <- read.csv("anime.csv", stringsAsFactors = FALSE)
+head(anime)
+names(anime)
+JC<-anime %>% select(Name, Score, Genres, English.name, Type, 
+                     Episodes ,Premiered, Studios, Source) %>%
+          filter(grepl("J.C.Staff", Studios))
+
+write.csv(JC,"J.C.Staff dataset.csv")
